@@ -21,10 +21,10 @@ export default function Home() {
   const refresh = useCallback(async () => {
     if (!patient) return;
     const [d, s, ai, cg] = await Promise.all([
-      listTodaysDoses(patient.id),
-      getHealthSnapshot(patient.id),
-      listCalls({ patientId: patient.id, direction: "system", limit: 5 }),
-      listCalls({ patientId: patient.id, direction: "caregiver", limit: 5 }),
+      listTodaysDoses(patient.patient_id), // ✅ Changed from patient.id
+      getHealthSnapshot(patient.patient_id), // ✅ Changed from patient.id
+      listCalls({ patientId: patient.patient_id, direction: "system", limit: 5 }), // ✅ Changed from patient.id
+      listCalls({ patientId: patient.patient_id, direction: "caregiver", limit: 5 }), // ✅ Changed from patient.id
     ]);
     setDoses(d);
     setSnapshot(s);
@@ -53,7 +53,7 @@ export default function Home() {
     <div className="min-h-screen">
       <Nav caregiverName={caregiver.name} />
       <main className="mx-auto max-w-5xl px-4 sm:px-8 py-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-        <PatientCallPanel patient={patient} caregiverId={caregiver.id} onCallPlaced={refresh} />
+        <PatientCallPanel patient={patient} caregiverId={caregiver.caregiver_id} onCallPlaced={refresh} /> {/* ✅ Changed from caregiver.id */}
         <div className="flex flex-col gap-6">
           <TodaysMedicationsCard doses={doses} />
           {snapshot && <HealthSnapshotCard snapshot={snapshot} />}

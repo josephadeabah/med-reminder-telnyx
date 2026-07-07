@@ -33,7 +33,7 @@ export function TodaysScheduleCard({ doses, onCallPlaced }: { doses: DoseWithCal
             const style = doseStatusStyle(dose.status);
             const isLive = dose.call_status && ["initiated", "ringing", "answered"].includes(dose.call_status);
             return (
-              <li key={dose.id} className="flex items-center gap-2.5">
+              <li key={dose.dose_id} className="flex items-center gap-2.5"> {/* ✅ Changed from dose.id */}
                 <StatusDot className={isLive ? "bg-amber" : style.dot} pulsing={!!isLive} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-ink truncate">{dose.medication_name}</p>
@@ -42,11 +42,11 @@ export function TodaysScheduleCard({ doses, onCallPlaced }: { doses: DoseWithCal
                 {dose.status === "pending" && !dose.call_id ? (
                   <button
                     type="button"
-                    onClick={() => handleTrigger(dose.id)}
-                    disabled={triggeringId === dose.id}
+                    onClick={() => handleTrigger(dose.dose_id)} // ✅ Changed from dose.id
+                    disabled={triggeringId === dose.dose_id} // ✅ Changed from dose.id
                     className="text-2xs font-mono text-accent hover:underline disabled:opacity-50"
                   >
-                    {triggeringId === dose.id ? "Calling…" : "Call now"}
+                    {triggeringId === dose.dose_id ? "Calling…" : "Call now"} {/* ✅ Changed from dose.id */}
                   </button>
                 ) : (
                   <span className={`text-2xs font-medium ${isLive ? "text-amber" : style.text}`}>

@@ -33,7 +33,7 @@ export function PatientCallPanel({
     setSubmitting(true);
     try {
       await placeCaregiverCall({
-        patient_id: patient.id,
+        patient_id: patient.patient_id, // ✅ Changed from patient.id
         caregiver_id: caregiverId,
         call_type: callType,
         call_reason: reason,

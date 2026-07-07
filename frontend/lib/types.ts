@@ -8,7 +8,7 @@ export type CallIntent = "taken" | "not_taken" | "unknown" | null;
 export type DoseStatus = "pending" | "confirmed" | "missed" | "skipped" | "escalated" | string;
 
 export interface Patient {
-  id: string;
+  patient_id: string; // ✅ Changed from id
   name: string;
   date_of_birth: string | null;
   age: number | null;
@@ -22,7 +22,7 @@ export interface Patient {
 }
 
 export interface Caregiver {
-  id: string;
+  caregiver_id: string; // ✅ Changed from id
   name: string;
   email: string;
   phone_number: string;
@@ -39,7 +39,7 @@ export interface HealthSnapshot {
 }
 
 export interface DoseWithCall {
-  id: string;
+  dose_id: string; // ✅ Changed from id
   patient_id: string;
   medication_id: string;
   medication_name: string;
@@ -61,7 +61,7 @@ export interface CallEvent {
 }
 
 export interface CallDetail {
-  id: string;
+  call_id: string; // ✅ Changed from id
   patient_id: string;
   caregiver_id: string | null;
   dose_id: string | null;
@@ -80,7 +80,7 @@ export interface CallDetail {
 }
 
 export interface CallSummary {
-  id: string;
+  call_id: string; // ✅ Changed from id
   patient_id: string;
   patient_name: string;
   caregiver_id: string | null;
@@ -97,7 +97,7 @@ export interface CallSummary {
 }
 
 export interface TimelineEvent {
-  id: string;
+  event_id: string; // ✅ Changed from id
   patient_id: string;
   call_id: string | null;
   event_type: string;

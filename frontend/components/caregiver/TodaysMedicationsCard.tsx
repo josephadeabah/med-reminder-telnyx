@@ -13,7 +13,7 @@ export function TodaysMedicationsCard({ doses }: { doses: DoseWithCall[] }) {
           {doses.map((dose) => {
             const style = doseStatusStyle(dose.status);
             return (
-              <li key={dose.id} className="flex items-center gap-2.5">
+              <li key={dose.dose_id} className="flex items-center gap-2.5"> {/* ✅ Changed from dose.id */}
                 <StatusDot className={style.dot} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-ink truncate">

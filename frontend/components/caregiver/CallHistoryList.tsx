@@ -21,7 +21,7 @@ export function CallHistoryList({ title, calls, emptyText }: { title: string; ca
                     : style.label
                 : callReasonLabel(call.call_reason);
             return (
-              <li key={call.id} className="flex items-center gap-2.5">
+              <li key={call.call_id} className="flex items-center gap-2.5"> {/* ✅ Changed from call.id */}
                 <StatusDot className={style.dot} pulsing={style.pulsing} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-ink truncate">

@@ -22,10 +22,10 @@ export default function AiCallCenterPage() {
   const refresh = useCallback(async () => {
     if (!patient) return;
     const [live, s, log, d] = await Promise.all([
-      listLiveCalls(patient.id),
-      getDashboardStats(patient.id),
-      listCalls({ patientId: patient.id, direction: "system", limit: 20 }),
-      listTodaysDoses(patient.id),
+      listLiveCalls(patient.patient_id), // ✅ Changed from patient.id
+      getDashboardStats(patient.patient_id), // ✅ Changed from patient.id
+      listCalls({ patientId: patient.patient_id, direction: "system", limit: 20 }), // ✅ Changed from patient.id
+      listTodaysDoses(patient.patient_id), // ✅ Changed from patient.id
     ]);
     setLiveCalls(live);
     setStats(s);
@@ -63,7 +63,7 @@ export default function AiCallCenterPage() {
         </header>
 
         {liveCalls.map((call) => (
-          <LiveCallBanner key={call.id} call={call} onEnded={refresh} />
+          <LiveCallBanner key={call.call_id} call={call} onEnded={refresh} /> {/* ✅ Changed from call.id */}
         ))}
 
         {stats && <StatCards stats={stats} />}
