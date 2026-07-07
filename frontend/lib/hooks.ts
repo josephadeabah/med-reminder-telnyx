@@ -21,11 +21,27 @@ export function usePrimaryContext() {
     let cancelled = false;
     (async () => {
       try {
+        console.log("Fetching caregiver and patients...");
         const [cg, patients] = await Promise.all([getCurrentCaregiver(), listPatients()]);
+        
         if (cancelled) return;
+        
+        console.log("Caregiver response:", cg);
+        console.log("Patients response:", patients);
+        
         setCaregiver(cg);
-        setPatient(patients[0] ?? null);
+        
+        if (patients && Array.isArray(patients) && patients.length > 0) {
+          const firstPatient = patients[0];
+          console.log("Setting patient:", firstPatient);
+          console.log("Patient ID:", firstPatient.patient_id || firstPatient.id);
+          setPatient(firstPatient);
+        } else {
+          console.warn("No patients found - seeding may not have run");
+          setError("No patients found. Run the backend seed script.");
+        }
       } catch (err) {
+        console.error("Error in usePrimaryContext:", err);
         if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load");
       } finally {
         if (!cancelled) setLoading(false);
