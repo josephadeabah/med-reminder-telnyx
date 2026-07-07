@@ -84,8 +84,8 @@ export const listLiveCalls = (patientId?: string) =>
 export const getCall = (id: string) => get<CallDetail>(`/calls/${id}`);
 
 export const placeCaregiverCall = (payload: {
-  patient_id: string;
-  caregiver_id: string;
+  patient_id: string;  // ✅ Must be patient_id
+  caregiver_id: string;  // ✅ Must be caregiver_id
   call_type: CallType;
   call_reason?: CallReason | null;
   pre_call_note?: string | null;

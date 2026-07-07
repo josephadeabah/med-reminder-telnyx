@@ -32,9 +32,18 @@ export function PatientCallPanel({
     setError(null);
     setSubmitting(true);
     try {
+      // ✅ Ensure patient_id is sent
+      const patientId = patient.patient_id || patient.id;
+      if (!patientId) {
+        throw new Error("Patient ID is missing");
+      }
+      if (!caregiverId) {
+        throw new Error("Caregiver ID is missing");
+      }
+      
       await placeCaregiverCall({
-        patient_id: patient.patient_id, // ✅ Changed from patient.id
-        caregiver_id: caregiverId,
+        patient_id: patientId,  // ✅ Must be patient_id
+        caregiver_id: caregiverId,  // ✅ Must be caregiver_id
         call_type: callType,
         call_reason: reason,
         pre_call_note: note.trim() || null,
