@@ -34,7 +34,7 @@ export function usePrimaryContext() {
             caregiver_id: cg.caregiver_id || FALLBACK_CAREGIVER_ID,  // ✅ Removed cg.id
             name: cg.name || "Sarah Mitchell",
             email: cg.email || "sarah@example.com",
-            phone_number: cg.phone_number || "+15550001111",
+            phone_number: cg.phone_number || "+233200415683",
             created_at: cg.created_at || new Date().toISOString(),
           });
         } else {
@@ -43,7 +43,7 @@ export function usePrimaryContext() {
             caregiver_id: FALLBACK_CAREGIVER_ID,
             name: "Sarah Mitchell",
             email: "sarah@example.com",
-            phone_number: "+15550001111",
+            phone_number: "+233200415683",
             created_at: new Date().toISOString(),
           });
         }
@@ -57,7 +57,7 @@ export function usePrimaryContext() {
             date_of_birth: p.date_of_birth || "1955-07-07",
             age: p.age || 71,
             relation_to_caregiver: p.relation_to_caregiver || "Your father",
-            phone_number: p.phone_number || "+15550002222",
+            phone_number: p.phone_number || "+233200415683",
             phone_label: p.phone_label || "Primary · Mobile",
             ai_monitoring_enabled: p.ai_monitoring_enabled ?? true,
             last_hba1c: p.last_hba1c || 7.2,
@@ -74,7 +74,7 @@ export function usePrimaryContext() {
             date_of_birth: "1955-07-07",
             age: 71,
             relation_to_caregiver: "Your father",
-            phone_number: "+15550002222",
+            phone_number: "+233200415683",
             phone_label: "Primary · Mobile",
             ai_monitoring_enabled: true,
             last_hba1c: 7.2,
@@ -90,7 +90,7 @@ export function usePrimaryContext() {
           caregiver_id: FALLBACK_CAREGIVER_ID,
           name: "Sarah Mitchell",
           email: "sarah@example.com",
-          phone_number: "+15550001111",
+          phone_number: "+233200415683",
           created_at: new Date().toISOString(),
         });
         setPatient({
@@ -99,7 +99,7 @@ export function usePrimaryContext() {
           date_of_birth: "1955-07-07",
           age: 71,
           relation_to_caregiver: "Your father",
-          phone_number: "+15550002222",
+          phone_number: "+233200415683",
           phone_label: "Primary · Mobile",
           ai_monitoring_enabled: true,
           last_hba1c: 7.2,
