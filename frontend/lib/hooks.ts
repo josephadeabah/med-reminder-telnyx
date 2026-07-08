@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getCurrentCaregiver, listPatients } from "./api";
 import type { Caregiver, Patient } from "./types";
 
-// Hardcoded fallback patient ID from your debug output
+// Hardcoded fallback IDs from your database
 const FALLBACK_PATIENT_ID = "2b743549-3ed4-45f9-852d-afe1e6e5fbd5";
 const FALLBACK_CAREGIVER_ID = "f4ecf73b-387d-48bf-a5d9-188490d6547b";
 
@@ -31,7 +31,7 @@ export function usePrimaryContext() {
         // Set caregiver - use API or fallback
         if (cg) {
           setCaregiver({
-            caregiver_id: cg.caregiver_id || cg.id || FALLBACK_CAREGIVER_ID,
+            caregiver_id: cg.caregiver_id || FALLBACK_CAREGIVER_ID,  // ✅ Removed cg.id
             name: cg.name || "Sarah Mitchell",
             email: cg.email || "sarah@example.com",
             phone_number: cg.phone_number || "+15550001111",
@@ -52,7 +52,7 @@ export function usePrimaryContext() {
         if (patients && patients.length > 0) {
           const p = patients[0];
           setPatient({
-            patient_id: p.patient_id || p.id || FALLBACK_PATIENT_ID,
+            patient_id: p.patient_id || FALLBACK_PATIENT_ID,  // ✅ Removed p.id
             name: p.name || "Robert Mitchell",
             date_of_birth: p.date_of_birth || "1955-07-07",
             age: p.age || 71,
