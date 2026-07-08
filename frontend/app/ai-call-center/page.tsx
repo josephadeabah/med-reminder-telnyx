@@ -9,39 +9,31 @@ import { StatCards } from "@/components/call-center/StatCards";
 import { TodaysScheduleCard } from "@/components/call-center/TodaysScheduleCard";
 import { Nav } from "@/components/shared/Nav";
 import { getDashboardStats, listCalls, listLiveCalls, listTodaysDoses } from "@/lib/api";
-import { usePrimaryContext } from "@/lib/hooks";
+import { FALLBACK_PATIENT, FALLBACK_CAREGIVER, PATIENT_ID } from "@/lib/constants";
 import type { CallSummary, DashboardStats, DoseWithCall } from "@/lib/types";
 
 export default function AiCallCenterPage() {
-  const { caregiver, patient, loading, error } = usePrimaryContext();
   const [liveCalls, setLiveCalls] = useState<CallSummary[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [callLog, setCallLog] = useState<CallSummary[]>([]);
   const [doses, setDoses] = useState<DoseWithCall[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Use hardcoded data
+  const patient = FALLBACK_PATIENT;
+  const caregiver = FALLBACK_CAREGIVER;
 
   const refresh = useCallback(async () => {
-    console.log("🔄 Refreshing AI Call Center...");
-    
-    if (!patient) {
-      console.warn("⚠️ No patient available for refresh");
-      return;
-    }
-    
-    const patientId = patient.patient_id || patient.id;
-    console.log("🔑 Patient ID for AI Call Center:", patientId);
-    
-    if (!patientId) {
-      console.error("❌ Patient has no ID:", patient);
-      return;
-    }
-    
     try {
+      console.log("🔄 Fetching AI Call Center data for patient:", PATIENT_ID);
+      
       const [live, s, log, d] = await Promise.all([
-        listLiveCalls(patientId),
-        getDashboardStats(patientId),
-        listCalls({ patientId, direction: "system", limit: 20 }),
-        listTodaysDoses(patientId),
+        listLiveCalls(PATIENT_ID),
+        getDashboardStats(PATIENT_ID),
+        listCalls({ patientId: PATIENT_ID, direction: "system", limit: 20 }),
+        listTodaysDoses(PATIENT_ID),
       ]);
+      
       setLiveCalls(live || []);
       setStats(s);
       setCallLog(log || []);
@@ -49,9 +41,10 @@ export default function AiCallCenterPage() {
     } catch (err) {
       console.error("❌ Error refreshing data:", err);
     }
-  }, [patient]);
+  }, []);
 
   useEffect(() => {
+    setLoading(false);
     refresh();
     const timer = setInterval(refresh, 4000);
     return () => clearInterval(timer);
@@ -59,13 +52,6 @@ export default function AiCallCenterPage() {
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-sm text-muted">Loading…</div>;
-  }
-  if (error || !patient || !caregiver) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-sm text-clay text-center px-6">
-        {error ?? "No patient/caregiver found yet. Run the backend seed script: python -m app.seed"}
-      </div>
-    );
   }
 
   return (
