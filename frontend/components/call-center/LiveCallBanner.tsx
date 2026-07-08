@@ -14,7 +14,7 @@ export function LiveCallBanner({ call, onEnded }: { call: CallSummary; onEnded: 
     setEnding(true);
     setError(null);
     try {
-      await endCall(call.call_id); // ✅ Changed from call.id
+      await endCall(call.call_id);
       onEnded();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Couldn't end the call.");

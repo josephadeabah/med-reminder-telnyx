@@ -40,7 +40,7 @@ export function CallLogTable({ calls }: { calls: CallSummary[] }) {
               {calls.map((call) => {
                 const style = callStatusStyle(call.status);
                 return (
-                  <tr key={call.call_id} className="border-t border-line"> {/* ✅ Changed from call.id */}
+                  <tr key={call.call_id} className="border-t border-line">
                     <td className="px-5 py-3 font-mono text-2xs text-muted whitespace-nowrap">
                       {formatDateTime(call.created_at)}
                     </td>
