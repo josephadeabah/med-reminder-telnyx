@@ -19,17 +19,31 @@ export default function Home() {
   const [caregiverCalls, setCaregiverCalls] = useState<CallSummary[]>([]);
 
   const refresh = useCallback(async () => {
-    if (!patient) return;
-    const [d, s, ai, cg] = await Promise.all([
-      listTodaysDoses(patient.patient_id), // ✅ Changed from patient.id
-      getHealthSnapshot(patient.patient_id), // ✅ Changed from patient.id
-      listCalls({ patientId: patient.patient_id, direction: "system", limit: 5 }), // ✅ Changed from patient.id
-      listCalls({ patientId: patient.patient_id, direction: "caregiver", limit: 5 }), // ✅ Changed from patient.id
-    ]);
-    setDoses(d);
-    setSnapshot(s);
-    setAiCalls(ai);
-    setCaregiverCalls(cg);
+    if (!patient) {
+      console.warn("No patient available for refresh");
+      return;
+    }
+    // ✅ Get the patient ID
+    const patientId = patient.patient_id || patient.id;
+    if (!patientId) {
+      console.error("Patient has no ID:", patient);
+      return;
+    }
+    try {
+      console.log("Refreshing data for patient:", patientId);
+      const [d, s, ai, cg] = await Promise.all([
+        listTodaysDoses(patientId),
+        getHealthSnapshot(patientId),
+        listCalls({ patientId, direction: "system", limit: 5 }),
+        listCalls({ patientId, direction: "caregiver", limit: 5 }),
+      ]);
+      setDoses(d || []);
+      setSnapshot(s);
+      setAiCalls(ai || []);
+      setCaregiverCalls(cg || []);
+    } catch (err) {
+      console.error("Error refreshing data:", err);
+    }
   }, [patient]);
 
   useEffect(() => {
@@ -49,11 +63,15 @@ export default function Home() {
     );
   }
 
+  // ✅ Get the caregiver ID
+  const caregiverId = caregiver.caregiver_id || caregiver.id;
+  console.log("Caregiver ID for call:", caregiverId);
+
   return (
     <div className="min-h-screen">
       <Nav caregiverName={caregiver.name} />
       <main className="mx-auto max-w-5xl px-4 sm:px-8 py-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-        <PatientCallPanel patient={patient} caregiverId={caregiver.caregiver_id} onCallPlaced={refresh} /> {/* ✅ Changed from caregiver.id */}
+        <PatientCallPanel patient={patient} caregiverId={caregiverId} onCallPlaced={refresh} />
         <div className="flex flex-col gap-6">
           <TodaysMedicationsCard doses={doses} />
           {snapshot && <HealthSnapshotCard snapshot={snapshot} />}

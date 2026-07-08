@@ -32,27 +32,32 @@ export function PatientCallPanel({
     setError(null);
     setSubmitting(true);
     try {
-      // ✅ Get the patient ID properly
+      // ✅ Get the patient ID - try both field names
       const patientId = patient.patient_id || patient.id;
+      // ✅ Get the caregiver ID
+      const caregiverIdValue = caregiverId;
+      
+      console.log("Patient object:", patient);
       console.log("Patient ID being sent:", patientId);
-      console.log("Caregiver ID being sent:", caregiverId);
+      console.log("Caregiver ID being sent:", caregiverIdValue);
       
       if (!patientId) {
-        throw new Error("Patient ID is missing");
+        throw new Error("Patient ID is missing. Patient object: " + JSON.stringify(patient));
       }
-      if (!caregiverId) {
+      if (!caregiverIdValue) {
         throw new Error("Caregiver ID is missing");
       }
       
-      // ✅ Ensure all required fields are sent
+      // ✅ Build the payload with all required fields
       const payload = {
         patient_id: patientId,
-        caregiver_id: caregiverId,
+        caregiver_id: caregiverIdValue,
         call_type: callType,
         call_reason: reason,
         pre_call_note: note.trim() || null,
       };
-      console.log("Payload being sent:", payload);
+      
+      console.log("Full payload being sent:", payload);
       
       await placeCaregiverCall(payload);
       setPlaced(true);
