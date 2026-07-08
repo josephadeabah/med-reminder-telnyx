@@ -8,8 +8,9 @@ export type CallIntent = "taken" | "not_taken" | "unknown" | null;
 export type DoseStatus = "pending" | "confirmed" | "missed" | "skipped" | "escalated" | string;
 
 // lib/types/index.ts
+// lib/types/index.ts
 export interface Patient {
-  patient_id: string;  // ✅ This is what the backend returns
+  patient_id: string;  // ✅ Must match backend
   name: string;
   date_of_birth: string | null;
   age: number | null;
@@ -20,8 +21,8 @@ export interface Patient {
   last_hba1c: number | null;
   last_hba1c_at: string | null;
   primary_caregiver_id: string | null;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Caregiver {

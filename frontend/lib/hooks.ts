@@ -21,10 +21,10 @@ export function usePrimaryContext() {
         console.log("Caregiver response:", cg);
         console.log("Patients response:", patients);
         
-        // ✅ Map the caregiver response
+        // ✅ Map the caregiver response - use caregiver_id
         if (cg) {
           setCaregiver({
-            caregiver_id: cg.caregiver_id || cg.id || cg.caregiverId,
+            caregiver_id: cg.caregiver_id || cg.id,
             name: cg.name,
             email: cg.email,
             phone_number: cg.phone_number,
@@ -32,11 +32,13 @@ export function usePrimaryContext() {
           });
         }
         
-        // ✅ Map the patient response
+        // ✅ Map the patient response - use patient_id
         if (patients && Array.isArray(patients) && patients.length > 0) {
           const p = patients[0];
+          console.log("First patient from API:", p);
+          
           const patientData = {
-            patient_id: p.patient_id || p.id || p.patientId,
+            patient_id: p.patient_id,  // ✅ Use patient_id from the response
             name: p.name,
             date_of_birth: p.date_of_birth,
             age: p.age,
