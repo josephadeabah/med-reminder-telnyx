@@ -1,3 +1,4 @@
+// lib/api.ts
 import type {
   CallDetail,
   CallReason,
@@ -11,7 +12,7 @@ import type {
   TimelineEvent,
 } from "./types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://p01--healthbuddy--jkmmxjgqyzmy.code.run";
 const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN;
 
 function headers(): HeadersInit {
@@ -56,30 +57,10 @@ function post<T>(path: string, body?: unknown): Promise<T> {
 }
 
 // --- Patients & caregivers ---
-// lib/api.ts - Add error handling
-export const listPatients = () => {
-  try {
-    return get<Patient[]>("/patients").catch(() => {
-      // Return empty array on error - fallback will handle it
-      return [];
-    });
-  } catch {
-    return Promise.resolve([]);
-  }
-};
-
-export const getCurrentCaregiver = () => {
-  try {
-    return get<Caregiver>("/caregivers/me").catch(() => {
-      // Return null on error - fallback will handle it
-      return null;
-    });
-  } catch {
-    return Promise.resolve(null);
-  }
-};
+export const listPatients = () => get<Patient[]>("/patients");
 export const getPatient = (id: string) => get<Patient>(`/patients/${id}`);
 export const getHealthSnapshot = (patientId: string) => get<HealthSnapshot>(`/patients/${patientId}/snapshot`);
+export const getCurrentCaregiver = () => get<Caregiver>("/caregivers/me");
 
 // --- Medications / doses ---
 export const listTodaysDoses = (patientId: string, on?: string) =>
@@ -109,10 +90,7 @@ export const placeCaregiverCall = (payload: {
   call_type: CallType;
   call_reason?: CallReason | null;
   pre_call_note?: string | null;
-}) => {
-  console.log("Sending caregiver call payload:", payload);
-  return post<CallDetail>("/calls/caregiver", payload);
-};
+}) => post<CallDetail>("/calls/caregiver", payload);
 
 export const triggerSystemCall = (doseId: string) => post<CallDetail>("/calls/system", { dose_id: doseId });
 
