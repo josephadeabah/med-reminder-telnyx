@@ -18,10 +18,13 @@ export function usePrimaryContext() {
         const [cg, patients] = await Promise.all([getCurrentCaregiver(), listPatients()]);
         if (cancelled) return;
         
-        // ✅ Map the response to ensure correct field names
+        console.log("Caregiver response:", cg);
+        console.log("Patients response:", patients);
+        
+        // ✅ Map the caregiver response
         if (cg) {
           setCaregiver({
-            caregiver_id: cg.caregiver_id || cg.id,
+            caregiver_id: cg.caregiver_id || cg.id || cg.caregiverId,
             name: cg.name,
             email: cg.email,
             phone_number: cg.phone_number,
@@ -29,10 +32,11 @@ export function usePrimaryContext() {
           });
         }
         
+        // ✅ Map the patient response
         if (patients && Array.isArray(patients) && patients.length > 0) {
           const p = patients[0];
-          setPatient({
-            patient_id: p.patient_id || p.id,
+          const patientData = {
+            patient_id: p.patient_id || p.id || p.patientId,
             name: p.name,
             date_of_birth: p.date_of_birth,
             age: p.age,
@@ -45,11 +49,14 @@ export function usePrimaryContext() {
             primary_caregiver_id: p.primary_caregiver_id,
             created_at: p.created_at,
             updated_at: p.updated_at,
-          });
+          };
+          console.log("Set patient:", patientData);
+          setPatient(patientData);
         } else {
           setError("No patients found. Run the backend seed script.");
         }
       } catch (err) {
+        console.error("Error in usePrimaryContext:", err);
         if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load");
       } finally {
         if (!cancelled) setLoading(false);

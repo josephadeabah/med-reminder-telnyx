@@ -56,10 +56,24 @@ function post<T>(path: string, body?: unknown): Promise<T> {
 }
 
 // --- Patients & caregivers ---
-export const listPatients = () => get<Patient[]>("/patients");
+// lib/api.ts
+export const listPatients = () => {
+  console.log("Fetching patients...");
+  return get<Patient[]>("/patients").then((patients) => {
+    console.log("Patients fetched:", patients);
+    return patients;
+  });
+};
+
+export const getCurrentCaregiver = () => {
+  console.log("Fetching current caregiver...");
+  return get<Caregiver>("/caregivers/me").then((caregiver) => {
+    console.log("Caregiver fetched:", caregiver);
+    return caregiver;
+  });
+};
 export const getPatient = (id: string) => get<Patient>(`/patients/${id}`);
 export const getHealthSnapshot = (patientId: string) => get<HealthSnapshot>(`/patients/${patientId}/snapshot`);
-export const getCurrentCaregiver = () => get<Caregiver>("/caregivers/me");
 
 // --- Medications / doses ---
 export const listTodaysDoses = (patientId: string, on?: string) =>
@@ -84,12 +98,15 @@ export const listLiveCalls = (patientId?: string) =>
 export const getCall = (id: string) => get<CallDetail>(`/calls/${id}`);
 
 export const placeCaregiverCall = (payload: {
-  patient_id: string;  // ✅ Must be patient_id
-  caregiver_id: string;  // ✅ Must be caregiver_id
+  patient_id: string;
+  caregiver_id: string;
   call_type: CallType;
   call_reason?: CallReason | null;
   pre_call_note?: string | null;
-}) => post<CallDetail>("/calls/caregiver", payload);
+}) => {
+  console.log("Sending caregiver call payload:", payload);
+  return post<CallDetail>("/calls/caregiver", payload);
+};
 
 export const triggerSystemCall = (doseId: string) => post<CallDetail>("/calls/system", { dose_id: doseId });
 

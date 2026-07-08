@@ -32,8 +32,11 @@ export function PatientCallPanel({
     setError(null);
     setSubmitting(true);
     try {
-      // ✅ Ensure patient_id is sent
+      // ✅ Get the patient ID properly
       const patientId = patient.patient_id || patient.id;
+      console.log("Patient ID being sent:", patientId);
+      console.log("Caregiver ID being sent:", caregiverId);
+      
       if (!patientId) {
         throw new Error("Patient ID is missing");
       }
@@ -41,19 +44,24 @@ export function PatientCallPanel({
         throw new Error("Caregiver ID is missing");
       }
       
-      await placeCaregiverCall({
-        patient_id: patientId,  // ✅ Must be patient_id
-        caregiver_id: caregiverId,  // ✅ Must be caregiver_id
+      // ✅ Ensure all required fields are sent
+      const payload = {
+        patient_id: patientId,
+        caregiver_id: caregiverId,
         call_type: callType,
         call_reason: reason,
         pre_call_note: note.trim() || null,
-      });
+      };
+      console.log("Payload being sent:", payload);
+      
+      await placeCaregiverCall(payload);
       setPlaced(true);
       setNote("");
       setReason(null);
       onCallPlaced();
       setTimeout(() => setPlaced(false), 4000);
     } catch (err) {
+      console.error("Error placing call:", err);
       setError(err instanceof ApiError ? err.message : "Couldn't reach the backend. Is it running?");
     } finally {
       setSubmitting(false);
