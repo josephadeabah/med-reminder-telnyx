@@ -56,21 +56,27 @@ function post<T>(path: string, body?: unknown): Promise<T> {
 }
 
 // --- Patients & caregivers ---
-// lib/api.ts
+// lib/api.ts - Add error handling
 export const listPatients = () => {
-  console.log("Fetching patients...");
-  return get<Patient[]>("/patients").then((patients) => {
-    console.log("Patients fetched:", patients);
-    return patients;
-  });
+  try {
+    return get<Patient[]>("/patients").catch(() => {
+      // Return empty array on error - fallback will handle it
+      return [];
+    });
+  } catch {
+    return Promise.resolve([]);
+  }
 };
 
 export const getCurrentCaregiver = () => {
-  console.log("Fetching current caregiver...");
-  return get<Caregiver>("/caregivers/me").then((caregiver) => {
-    console.log("Caregiver fetched:", caregiver);
-    return caregiver;
-  });
+  try {
+    return get<Caregiver>("/caregivers/me").catch(() => {
+      // Return null on error - fallback will handle it
+      return null;
+    });
+  } catch {
+    return Promise.resolve(null);
+  }
 };
 export const getPatient = (id: string) => get<Patient>(`/patients/${id}`);
 export const getHealthSnapshot = (patientId: string) => get<HealthSnapshot>(`/patients/${patientId}/snapshot`);
