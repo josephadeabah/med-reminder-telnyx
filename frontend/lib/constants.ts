@@ -11,7 +11,7 @@ export const FALLBACK_PATIENT: Patient = {
   date_of_birth: "1955-07-07",
   age: 71,
   relation_to_caregiver: "Your father",
-  phone_number: "+16465753303",
+  phone_number: "+233200415683",
   phone_label: "Primary · Mobile",
   ai_monitoring_enabled: true,
   last_hba1c: 7.2,
@@ -25,6 +25,6 @@ export const FALLBACK_CAREGIVER: Caregiver = {
   caregiver_id: CAREGIVER_ID,
   name: "Sarah Mitchell",
   email: "sarah@example.com",
-  phone_number: "+16465753303",
+  phone_number: "+233200415683",
   created_at: new Date().toISOString(),
 };
