@@ -19,53 +19,86 @@ export default function Home() {
   const [caregiverCalls, setCaregiverCalls] = useState<CallSummary[]>([]);
 
   const refresh = useCallback(async () => {
+    console.log("🔄 Refreshing data...");
+    
     if (!patient) {
-      console.warn("No patient available for refresh");
+      console.warn("⚠️ No patient available for refresh");
       return;
     }
+    
     // ✅ Get the patient ID
     const patientId = patient.patient_id || patient.id;
+    console.log("🔑 Patient ID for refresh:", patientId);
+    
     if (!patientId) {
-      console.error("Patient has no ID:", patient);
+      console.error("❌ Patient has no ID:", patient);
       return;
     }
+    
     try {
-      console.log("Refreshing data for patient:", patientId);
+      console.log("📡 Fetching data for patient:", patientId);
       const [d, s, ai, cg] = await Promise.all([
         listTodaysDoses(patientId),
         getHealthSnapshot(patientId),
         listCalls({ patientId, direction: "system", limit: 5 }),
         listCalls({ patientId, direction: "caregiver", limit: 5 }),
       ]);
+      console.log("✅ Data fetched successfully");
       setDoses(d || []);
       setSnapshot(s);
       setAiCalls(ai || []);
       setCaregiverCalls(cg || []);
     } catch (err) {
-      console.error("Error refreshing data:", err);
+      console.error("❌ Error refreshing data:", err);
     }
   }, [patient]);
 
   useEffect(() => {
+    console.log("🔄 Home component mounted");
     refresh();
     const timer = setInterval(refresh, 5000);
-    return () => clearInterval(timer);
+    return () => {
+      console.log("🧹 Cleaning up timer");
+      clearInterval(timer);
+    };
   }, [refresh]);
 
   if (loading) {
+    console.log("⏳ Loading...");
     return <div className="min-h-screen flex items-center justify-center text-sm text-muted">Loading…</div>;
   }
-  if (error || !patient || !caregiver) {
+  
+  if (error) {
+    console.error("❌ Error state:", error);
     return (
       <div className="min-h-screen flex items-center justify-center text-sm text-clay text-center px-6">
-        {error ?? "No patient/caregiver found yet. Run the backend seed script: python -m app.seed"}
+        {error}
+      </div>
+    );
+  }
+  
+  if (!patient) {
+    console.warn("⚠️ No patient available");
+    return (
+      <div className="min-h-screen flex items-center justify-center text-sm text-clay text-center px-6">
+        No patient found. Run the backend seed script: python -m app.seed
+      </div>
+    );
+  }
+
+  if (!caregiver) {
+    console.warn("⚠️ No caregiver available");
+    return (
+      <div className="min-h-screen flex items-center justify-center text-sm text-clay text-center px-6">
+        No caregiver found. Run the backend seed script: python -m app.seed
       </div>
     );
   }
 
   // ✅ Get the caregiver ID
   const caregiverId = caregiver.caregiver_id || caregiver.id;
-  console.log("Caregiver ID for call:", caregiverId);
+  console.log("👤 Caregiver ID:", caregiverId);
+  console.log("👤 Patient ID:", patient.patient_id);
 
   return (
     <div className="min-h-screen">

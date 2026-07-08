@@ -20,17 +20,35 @@ export default function AiCallCenterPage() {
   const [doses, setDoses] = useState<DoseWithCall[]>([]);
 
   const refresh = useCallback(async () => {
-    if (!patient) return;
-    const [live, s, log, d] = await Promise.all([
-      listLiveCalls(patient.patient_id), // ✅ Changed from patient.id
-      getDashboardStats(patient.patient_id), // ✅ Changed from patient.id
-      listCalls({ patientId: patient.patient_id, direction: "system", limit: 20 }), // ✅ Changed from patient.id
-      listTodaysDoses(patient.patient_id), // ✅ Changed from patient.id
-    ]);
-    setLiveCalls(live);
-    setStats(s);
-    setCallLog(log);
-    setDoses(d);
+    console.log("🔄 Refreshing AI Call Center...");
+    
+    if (!patient) {
+      console.warn("⚠️ No patient available for refresh");
+      return;
+    }
+    
+    const patientId = patient.patient_id || patient.id;
+    console.log("🔑 Patient ID for AI Call Center:", patientId);
+    
+    if (!patientId) {
+      console.error("❌ Patient has no ID:", patient);
+      return;
+    }
+    
+    try {
+      const [live, s, log, d] = await Promise.all([
+        listLiveCalls(patientId),
+        getDashboardStats(patientId),
+        listCalls({ patientId, direction: "system", limit: 20 }),
+        listTodaysDoses(patientId),
+      ]);
+      setLiveCalls(live || []);
+      setStats(s);
+      setCallLog(log || []);
+      setDoses(d || []);
+    } catch (err) {
+      console.error("❌ Error refreshing data:", err);
+    }
   }, [patient]);
 
   useEffect(() => {
@@ -63,7 +81,7 @@ export default function AiCallCenterPage() {
         </header>
 
         {liveCalls.map((call) => (
-          <LiveCallBanner key={call.call_id} call={call} onEnded={refresh} /> {/* ✅ Changed from call.id */}
+          <LiveCallBanner key={call.call_id} call={call} onEnded={refresh} />
         ))}
 
         {stats && <StatCards stats={stats} />}
