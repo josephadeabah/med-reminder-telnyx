@@ -24,8 +24,6 @@ export default function Home() {
 
   const refresh = useCallback(async () => {
     try {
-      console.log("🔄 Fetching data for patient:", PATIENT_ID);
-      
       const [d, s, ai, cg] = await Promise.all([
         listTodaysDoses(PATIENT_ID),
         getHealthSnapshot(PATIENT_ID),
@@ -38,7 +36,7 @@ export default function Home() {
       setAiCalls(ai || []);
       setCaregiverCalls(cg || []);
     } catch (err) {
-      console.error("❌ Error refreshing data:", err);
+      console.error("Error refreshing data:", err);
     }
   }, []);
 

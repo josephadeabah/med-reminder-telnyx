@@ -25,8 +25,6 @@ export default function AiCallCenterPage() {
 
   const refresh = useCallback(async () => {
     try {
-      console.log("🔄 Fetching AI Call Center data for patient:", PATIENT_ID);
-      
       const [live, s, log, d] = await Promise.all([
         listLiveCalls(PATIENT_ID),
         getDashboardStats(PATIENT_ID),
@@ -39,7 +37,7 @@ export default function AiCallCenterPage() {
       setCallLog(log || []);
       setDoses(d || []);
     } catch (err) {
-      console.error("❌ Error refreshing data:", err);
+      console.error("Error refreshing data:", err);
     }
   }, []);
 
