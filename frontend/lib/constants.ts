@@ -11,7 +11,7 @@ export const FALLBACK_PATIENT: Patient = {
   date_of_birth: "1955-07-07",
   age: 71,
   relation_to_caregiver: "Your father",
-  phone_number: "+233597948753",
+  phone_number: "+16465753303",
   phone_label: "Primary · Mobile",
   ai_monitoring_enabled: true,
   last_hba1c: 7.2,
