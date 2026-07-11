@@ -1,11 +1,12 @@
+// frontend/src/components/Nav.tsx
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
-  { href: "/", label: "Call patient" },
-  { href: "/ai-call-center", label: "AI call center" },
+  { href: "/", label: "Dashboard" },
+  { href: "/ai-call-center", label: "AI Call Center" },
 ];
 
 export function Nav({ caregiverName }: { caregiverName?: string }) {

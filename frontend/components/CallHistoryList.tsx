@@ -1,3 +1,4 @@
+// frontend/src/components/CallHistoryList.tsx
 import type { CallSummary } from "@/lib/types";
 import { callReasonLabel, callStatusStyle, formatRelative } from "@/lib/format";
 import { StatusDot } from "@/components/shared/StatusDot";
@@ -13,13 +14,15 @@ export function CallHistoryList({ title, calls, emptyText }: { title: string; ca
           {calls.map((call) => {
             const style = callStatusStyle(call.status);
             const detail =
-              call.direction === "system"
+              call.direction === "system_to_patient"
                 ? call.intent === "taken"
                   ? "Confirmed"
                   : call.intent === "not_taken"
                     ? "Not taken"
                     : style.label
-                : callReasonLabel(call.call_reason);
+                : call.direction === "system_to_caregiver"
+                  ? "🚨 Emergency alert"
+                  : callReasonLabel(call.call_reason);
             return (
               <li key={call.call_id} className="flex items-center gap-2.5">
                 <StatusDot className={style.dot} pulsing={style.pulsing} />
@@ -30,7 +33,7 @@ export function CallHistoryList({ title, calls, emptyText }: { title: string; ca
                   <p className="text-2xs font-mono text-muted">{formatRelative(call.created_at)}</p>
                 </div>
                 <span className={`text-2xs font-medium ${style.text}`}>
-                  {call.direction === "system" ? detail : style.label}
+                  {detail}
                 </span>
               </li>
             );

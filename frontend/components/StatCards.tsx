@@ -1,3 +1,4 @@
+// frontend/src/components/StatCards.tsx
 import type { DashboardStats } from "@/lib/types";
 
 function Card({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "accent" | "clay" }) {

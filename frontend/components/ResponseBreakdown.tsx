@@ -1,3 +1,4 @@
+// frontend/src/components/ResponseBreakdown.tsx
 import type { ResponseBreakdown as ResponseBreakdownType } from "@/lib/types";
 
 const SEGMENTS: { key: keyof ResponseBreakdownType; label: string; barClass: string; textClass: string }[] = [

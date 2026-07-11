@@ -1,3 +1,4 @@
+// frontend/src/components/shared/StatusDot.tsx
 export function StatusDot({ className, pulsing }: { className: string; pulsing?: boolean }) {
   return (
     <span className="relative inline-flex h-2.5 w-2.5 shrink-0">

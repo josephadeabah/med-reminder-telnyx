@@ -1,3 +1,4 @@
+// frontend/src/components/TodaysScheduleCard.tsx
 "use client";
 
 import { useState } from "react";
@@ -15,7 +16,6 @@ export function TodaysScheduleCard({ doses, onCallPlaced }: { doses: DoseWithCal
       await triggerSystemCall(doseId);
       onCallPlaced();
     } catch (err) {
-      // Surfacing inline is enough here; the dose row will just stay pending.
       console.error(err instanceof ApiError ? err.message : err);
     } finally {
       setTriggeringId(null);

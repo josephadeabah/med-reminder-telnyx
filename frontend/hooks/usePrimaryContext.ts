@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-import { getCurrentCaregiver, listPatients } from "./api";
-import type { Caregiver, Patient } from "./types";
+import { getCurrentCaregiver, listPatients } from "../lib/api";
+import type { Caregiver, Patient } from "../lib/types";
 
 // Hardcoded fallback IDs from your database
 const FALLBACK_PATIENT_ID = "2b743549-3ed4-45f9-852d-afe1e6e5fbd5";
@@ -63,6 +63,8 @@ export function usePrimaryContext() {
             last_hba1c: p.last_hba1c || 7.2,
             last_hba1c_at: p.last_hba1c_at || "2026-06-25",
             primary_caregiver_id: p.primary_caregiver_id || FALLBACK_CAREGIVER_ID,
+            opt_out_calls: p.opt_out_calls ?? false,
+            escalation_preferences: p.escalation_preferences || {},
             created_at: p.created_at || new Date().toISOString(),
             updated_at: p.updated_at || new Date().toISOString(),
           });
@@ -80,6 +82,8 @@ export function usePrimaryContext() {
             last_hba1c: 7.2,
             last_hba1c_at: "2026-06-25",
             primary_caregiver_id: FALLBACK_CAREGIVER_ID,
+            opt_out_calls: false,
+            escalation_preferences: {},
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           });
@@ -105,6 +109,8 @@ export function usePrimaryContext() {
           last_hba1c: 7.2,
           last_hba1c_at: "2026-06-25",
           primary_caregiver_id: FALLBACK_CAREGIVER_ID,
+          opt_out_calls: false,
+          escalation_preferences: {},
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         });
