@@ -12,14 +12,31 @@ import type {
   Patient,
   TimelineEvent,
 } from "./types";
+import { supabase } from "@/lib/supabaseClient";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://p01--healthbuddy--jkmmxjgqyzmy.code.run";
-const API_TOKEN = process.env.NEXT_PUBLIC_API_TOKEN;
 
-function headers(): HeadersInit {
-  const h: HeadersInit = { "Content-Type": "application/json" };
-  if (API_TOKEN) h["Authorization"] = `Bearer ${API_TOKEN}`;
-  return h;
+// ✅ Get the current Supabase session token
+async function getAuthToken(): Promise<string | null> {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.access_token || null;
+  } catch (error) {
+    console.error("Failed to get auth token:", error);
+    return null;
+  }
+}
+
+// ✅ Create headers with authentication
+async function getHeaders(): Promise<HeadersInit> {
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  
+  const token = await getAuthToken();
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
+  return headers;
 }
 
 export class ApiError extends Error {
@@ -45,14 +62,19 @@ async function handle<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-function get<T>(path: string): Promise<T> {
-  return fetch(`${API_URL}${path}`, { headers: headers(), cache: "no-store" }).then(handle<T>);
+async function get<T>(path: string): Promise<T> {
+  const headers = await getHeaders();
+  return fetch(`${API_URL}${path}`, { 
+    headers, 
+    cache: "no-store" 
+  }).then(handle<T>);
 }
 
-function post<T>(path: string, body?: unknown): Promise<T> {
+async function post<T>(path: string, body?: unknown): Promise<T> {
+  const headers = await getHeaders();
   return fetch(`${API_URL}${path}`, {
     method: "POST",
-    headers: headers(),
+    headers,
     body: body ? JSON.stringify(body) : undefined,
   }).then(handle<T>);
 }
@@ -85,9 +107,7 @@ export const listLiveCalls = (patientId?: string) =>
 
 export const getCall = (id: string) => get<CallDetail>(`/calls/${id}`);
 
-// REMOVED: placeCaregiverCall - no more caregiver-initiated bridge calls
-
-// NEW: Trigger escalation from the app
+// Trigger escalation from the app
 export const triggerEscalation = (payload: EscalationTriggerRequest) =>
   post<CallDetail>("/calls/escalate", payload);
 
