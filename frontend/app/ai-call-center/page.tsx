@@ -1,10 +1,10 @@
 // app/ai-call-center/page.tsx
 "use client";
 
-import { usePrimaryContext } from "@/hooks/usePrimaryContext";
+import { usePrimaryContext } from "@/lib/hooks";
 import { CallLogTable } from "@/components/CallLogTable";
-import { LiveCallBanner } from "@/components/LiveCallBanner";
-import { Nav } from "@/components/Nav";
+import { LiveCallBanner } from "@/components/call-center/LiveCallBanner";
+import { Nav } from "@/components/shared/Nav";
 import { TodaysScheduleCard } from "@/components/TodaysScheduleCard";
 import { StatCards } from "@/components/StatCards";
 import { ResponseBreakdown } from "@/components/ResponseBreakdown";

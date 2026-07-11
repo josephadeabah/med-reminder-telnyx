@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-import { getCurrentCaregiver, listPatients } from "../lib/api";
-import type { Caregiver, Patient } from "../lib/types";
+import { getCurrentCaregiver, listPatients } from "./api";
+import type { Caregiver, Patient } from "./types";
 
 // Hardcoded fallback IDs from your database
 const FALLBACK_PATIENT_ID = "2b743549-3ed4-45f9-852d-afe1e6e5fbd5";

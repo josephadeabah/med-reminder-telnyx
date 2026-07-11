@@ -1,11 +1,11 @@
 // app/page.tsx
 "use client";
 
-import { usePrimaryContext } from "@/hooks/usePrimaryContext";
+import { usePrimaryContext } from "@/lib/hooks";
 import { EmergencyButtons } from "@/components/EmergencyButtons";
 import { CallLogTable } from "@/components/CallLogTable";
-import { LiveCallBanner } from "@/components/LiveCallBanner";
-import { Nav } from "@/components/Nav";
+import { LiveCallBanner } from "@/components/call-center/LiveCallBanner";
+import { Nav } from "@/components/shared/Nav";
 import { useCalls } from "@/hooks/useCalls";
 
 export default function HomePage() {
