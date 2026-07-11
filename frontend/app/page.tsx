@@ -1,10 +1,10 @@
-// app/page.tsx
 "use client";
 
 import { usePrimaryContext } from "@/lib/hooks";
 import { EmergencyButtons } from "@/components/EmergencyButtons";
 import { CallLogTable } from "@/components/CallLogTable";
-import { LiveCallBanner } from "@/components/call-center/LiveCallBanner";
+// ✅ Fixed: Remove the call-center/ path
+import { LiveCallBanner } from "@/components/LiveCallBanner";
 import { Nav } from "@/components/shared/Nav";
 import { useCalls } from "@/hooks/useCalls";
 
@@ -33,7 +33,6 @@ export default function HomePage() {
       <Nav caregiverName={caregiver?.name} />
 
       <main className="mx-auto max-w-5xl px-4 sm:px-8 py-8 space-y-6">
-        {/* Patient header */}
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-accent-soft text-accent flex items-center justify-center font-semibold text-lg">
             {patient.name.charAt(0)}
@@ -46,12 +45,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Live call banner */}
         {liveCalls.length > 0 && (
           <LiveCallBanner call={liveCalls[0]} onEnded={refreshCalls} />
         )}
 
-        {/* Emergency buttons */}
         <EmergencyButtons
           patientId={patient.patient_id}
           patientName={patient.name}
@@ -59,7 +56,6 @@ export default function HomePage() {
           caregiverName={caregiver?.name}
         />
 
-        {/* Call log */}
         <CallLogTable calls={calls} />
       </main>
     </div>

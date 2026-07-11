@@ -23,19 +23,25 @@ export function LiveCallBanner({ call, onEnded }: { call: CallSummary; onEnded: 
     }
   }
 
+  const isPatientCall = call.direction === "system_to_patient";
+  const isCaregiverAlert = call.direction === "system_to_caregiver";
+
   return (
     <div className="rounded-xl bg-accent text-white p-5 flex items-center justify-between gap-4 flex-wrap">
       <div className="flex items-center gap-3">
         <StatusDot className="bg-white" pulsing />
         <div>
           <p className="text-2xs font-mono uppercase tracking-wide text-white/70">
-            {call.direction === "system" ? "Live AI call in progress" : "Live caregiver call in progress"}
+            {isPatientCall && "📞 Live AI call to patient"}
+            {isCaregiverAlert && "🚨 Emergency call to caregiver"}
+            {!isPatientCall && !isCaregiverAlert && "Live call in progress"}
           </p>
           <p className="text-sm font-medium mt-0.5">
             {call.medication_name ? `${call.medication_name} check` : "Call"} — {call.patient_name}
           </p>
           <p className="text-2xs font-mono text-white/70 mt-0.5">
             Started {formatRelative(call.created_at)} · {call.status}
+            {call.escalation_level && ` · ${call.escalation_level}`}
           </p>
         </div>
       </div>

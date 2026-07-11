@@ -1,4 +1,3 @@
-// components/EmergencyButtons.tsx
 "use client";
 
 import { useState } from "react";
@@ -48,7 +47,6 @@ export function EmergencyButtons({
       alert("⚠️ No caregiver phone number configured.");
       return;
     }
-    // Opens native dialer with the number pre-filled
     window.location.href = `tel:${caregiverPhoneNumber}`;
   };
 

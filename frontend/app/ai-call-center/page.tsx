@@ -1,9 +1,9 @@
-// app/ai-call-center/page.tsx
 "use client";
 
 import { usePrimaryContext } from "@/lib/hooks";
 import { CallLogTable } from "@/components/CallLogTable";
-import { LiveCallBanner } from "@/components/call-center/LiveCallBanner";
+// ✅ Fixed: Remove the call-center/ path since LiveCallBanner is in components/
+import { LiveCallBanner } from "@/components/LiveCallBanner";
 import { Nav } from "@/components/shared/Nav";
 import { TodaysScheduleCard } from "@/components/TodaysScheduleCard";
 import { StatCards } from "@/components/StatCards";
@@ -47,7 +47,6 @@ export default function AICallCenterPage() {
       <Nav caregiverName={caregiver?.name} />
 
       <main className="mx-auto max-w-5xl px-4 sm:px-8 py-8 space-y-6">
-        {/* Patient header */}
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-accent-soft text-accent flex items-center justify-center font-semibold text-lg">
             {patient.name.charAt(0)}
@@ -60,18 +59,14 @@ export default function AICallCenterPage() {
           </div>
         </div>
 
-        {/* Live call banner */}
         {liveCalls.length > 0 && (
           <LiveCallBanner call={liveCalls[0]} onEnded={handleCallPlaced} />
         )}
 
-        {/* Stats */}
         {stats && <StatCards stats={stats} />}
 
-        {/* Today's schedule */}
         <TodaysScheduleCard doses={doses} onCallPlaced={handleCallPlaced} />
 
-        {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {snapshot && <HealthSnapshotCard snapshot={snapshot} />}
           {stats?.breakdown && (
@@ -79,14 +74,12 @@ export default function AICallCenterPage() {
           )}
         </div>
 
-        {/* Call history */}
         <CallHistoryList
           title="Recent calls"
           calls={calls.slice(0, 10)}
           emptyText="No calls yet."
         />
 
-        {/* Full call log */}
         <CallLogTable calls={calls} />
       </main>
     </div>
