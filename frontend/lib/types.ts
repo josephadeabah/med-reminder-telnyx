@@ -1,12 +1,21 @@
 // lib/types/index.ts
-export type CallDirection = "system" | "caregiver";
+export type CallDirection = "system_to_patient" | "system_to_caregiver";
 export type CallType = "voice" | "video";
-export type CallReason = "medication_check" | "wellbeing_check" | "appointment_reminder" | "general_check" | "urgent_concern";
+export type CallReason = 
+  | "medication_check" 
+  | "wellbeing_check" 
+  | "appointment_reminder" 
+  | "general_check" 
+  | "urgent_concern"
+  | "emergency_escalation"
+  | "medication_out"
+  | "symptom_report";
 export type CallStatus =
-  | "queued" | "initiated" | "ringing" | "answered" | "bridged"
+  | "queued" | "initiated" | "ringing" | "answered"
   | "completed" | "failed" | "busy" | "no-answer" | string;
-export type CallIntent = "taken" | "not_taken" | "unknown" | null;
+export type CallIntent = "taken" | "not_taken" | "unknown" | "emergency" | null;
 export type DoseStatus = "pending" | "confirmed" | "missed" | "skipped" | "escalated" | string;
+export type EscalationLevel = "l1_app_only" | "l2_app_browser" | "l3_call_patient" | "l4_call_caregiver";
 
 export interface Patient {
   patient_id: string;
@@ -17,6 +26,8 @@ export interface Patient {
   phone_number: string;
   phone_label: string;
   ai_monitoring_enabled: boolean;
+  opt_out_calls: boolean; // NEW
+  escalation_preferences: Record<string, EscalationLevel> | null; // NEW
   last_hba1c: number | null;
   last_hba1c_at: string | null;
   primary_caregiver_id: string | null;
@@ -74,9 +85,9 @@ export interface CallDetail {
   direction: CallDirection;
   call_type: CallType;
   call_reason: CallReason | null;
+  escalation_level: EscalationLevel | null; // NEW
   pre_call_note: string | null;
   call_control_id: string | null;
-  patient_call_control_id: string | null;
   status: CallStatus;
   intent: CallIntent;
   transcript: string | null;
@@ -86,7 +97,7 @@ export interface CallDetail {
 }
 
 export interface CallSummary {
-  call_id: string;  // ✅ This must exist
+  call_id: string;
   patient_id: string;
   patient_name: string;
   caregiver_id: string | null;
@@ -95,6 +106,7 @@ export interface CallSummary {
   direction: CallDirection;
   call_type: CallType;
   call_reason: CallReason | null;
+  escalation_level: EscalationLevel | null; // NEW
   status: CallStatus;
   intent: CallIntent;
   transcript: string | null;
@@ -129,4 +141,11 @@ export interface DashboardStats {
   next_appointment_at: string | null;
   next_appointment_doctor: string | null;
   breakdown: ResponseBreakdown;
+}
+
+// NEW: Escalation types
+export interface EscalationTriggerRequest {
+  patient_id: string;
+  event_type: string;
+  reason: string;
 }

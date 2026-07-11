@@ -7,6 +7,7 @@ import type {
   Caregiver,
   DashboardStats,
   DoseWithCall,
+  EscalationTriggerRequest,
   HealthSnapshot,
   Patient,
   TimelineEvent,
@@ -84,13 +85,11 @@ export const listLiveCalls = (patientId?: string) =>
 
 export const getCall = (id: string) => get<CallDetail>(`/calls/${id}`);
 
-export const placeCaregiverCall = (payload: {
-  patient_id: string;
-  caregiver_id: string;
-  call_type: CallType;
-  call_reason?: CallReason | null;
-  pre_call_note?: string | null;
-}) => post<CallDetail>("/calls/caregiver", payload);
+// REMOVED: placeCaregiverCall - no more caregiver-initiated bridge calls
+
+// NEW: Trigger escalation from the app
+export const triggerEscalation = (payload: EscalationTriggerRequest) =>
+  post<CallDetail>("/calls/escalate", payload);
 
 export const triggerSystemCall = (doseId: string) => post<CallDetail>("/calls/system", { dose_id: doseId });
 

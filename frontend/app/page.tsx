@@ -1,67 +1,66 @@
+// app/page.tsx
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { usePrimaryContext } from "@/hooks/usePrimaryContext";
+import { EmergencyButtons } from "@/components/EmergencyButtons";
+import { CallLogTable } from "@/components/CallLogTable";
+import { LiveCallBanner } from "@/components/LiveCallBanner";
+import { Nav } from "@/components/Nav";
+import { useCalls } from "@/hooks/useCalls";
 
-import { CallHistoryList } from "@/components/caregiver/CallHistoryList";
-import { HealthSnapshotCard } from "@/components/caregiver/HealthSnapshotCard";
-import { PatientCallPanel } from "@/components/caregiver/PatientCallPanel";
-import { TodaysMedicationsCard } from "@/components/caregiver/TodaysMedicationsCard";
-import { Nav } from "@/components/shared/Nav";
-import { getHealthSnapshot, listCalls, listTodaysDoses } from "@/lib/api";
-import { FALLBACK_PATIENT, FALLBACK_CAREGIVER, PATIENT_ID, CAREGIVER_ID } from "@/lib/constants";
-import type { CallSummary, DoseWithCall, HealthSnapshot as HealthSnapshotT } from "@/lib/types";
-
-export default function Home() {
-  const [doses, setDoses] = useState<DoseWithCall[]>([]);
-  const [snapshot, setSnapshot] = useState<HealthSnapshotT | null>(null);
-  const [aiCalls, setAiCalls] = useState<CallSummary[]>([]);
-  const [caregiverCalls, setCaregiverCalls] = useState<CallSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // ✅ Use hardcoded data - guaranteed to work
-  const patient = FALLBACK_PATIENT;
-  const caregiver = FALLBACK_CAREGIVER;
-
-  const refresh = useCallback(async () => {
-    try {
-      const [d, s, ai, cg] = await Promise.all([
-        listTodaysDoses(PATIENT_ID),
-        getHealthSnapshot(PATIENT_ID),
-        listCalls({ patientId: PATIENT_ID, direction: "system", limit: 5 }),
-        listCalls({ patientId: PATIENT_ID, direction: "caregiver", limit: 5 }),
-      ]);
-      
-      setDoses(d || []);
-      setSnapshot(s);
-      setAiCalls(ai || []);
-      setCaregiverCalls(cg || []);
-    } catch (err) {
-      console.error("Error refreshing data:", err);
-    }
-  }, []);
-
-  useEffect(() => {
-    setLoading(false);
-    refresh();
-    const timer = setInterval(refresh, 5000);
-    return () => clearInterval(timer);
-  }, [refresh]);
+export default function HomePage() {
+  const { caregiver, patient, loading, error } = usePrimaryContext();
+  const { calls, liveCalls, refreshCalls } = useCalls(patient?.patient_id);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-sm text-muted">Loading…</div>;
+    return (
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="text-muted">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error || !patient) {
+    return (
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="text-clay">Error: {error || "Patient not found"}</div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen">
-      <Nav caregiverName={caregiver.name} />
-      <main className="mx-auto max-w-5xl px-4 sm:px-8 py-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-        <PatientCallPanel patient={patient} caregiverId={CAREGIVER_ID} onCallPlaced={refresh} />
-        <div className="flex flex-col gap-6">
-          <TodaysMedicationsCard doses={doses} />
-          {snapshot && <HealthSnapshotCard snapshot={snapshot} />}
-          <CallHistoryList title="Recent AI calls" calls={aiCalls} emptyText="No AI calls yet." />
-          <CallHistoryList title="Your previous calls" calls={caregiverCalls} emptyText="You haven't called yet." />
+    <div className="min-h-screen bg-paper">
+      <Nav caregiverName={caregiver?.name} />
+
+      <main className="mx-auto max-w-5xl px-4 sm:px-8 py-8 space-y-6">
+        {/* Patient header */}
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-accent-soft text-accent flex items-center justify-center font-semibold text-lg">
+            {patient.name.charAt(0)}
+          </div>
+          <div>
+            <h1 className="text-xl font-semibold text-ink">{patient.name}</h1>
+            <p className="text-sm text-muted">
+              {patient.age} years old · {patient.relation_to_caregiver || "Patient"}
+            </p>
+          </div>
         </div>
+
+        {/* Live call banner */}
+        {liveCalls.length > 0 && (
+          <LiveCallBanner call={liveCalls[0]} onEnded={refreshCalls} />
+        )}
+
+        {/* Emergency buttons */}
+        <EmergencyButtons
+          patientId={patient.patient_id}
+          patientName={patient.name}
+          caregiverPhoneNumber={caregiver?.phone_number}
+          caregiverName={caregiver?.name}
+        />
+
+        {/* Call log */}
+        <CallLogTable calls={calls} />
       </main>
     </div>
   );

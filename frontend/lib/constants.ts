@@ -14,6 +14,8 @@ export const FALLBACK_PATIENT: Patient = {
   phone_number: "+16465753303",
   phone_label: "Primary · Mobile",
   ai_monitoring_enabled: true,
+  opt_out_calls: false, // NEW
+  escalation_preferences: null, // NEW
   last_hba1c: 7.2,
   last_hba1c_at: "2026-06-25",
   primary_caregiver_id: CAREGIVER_ID,

@@ -1,82 +1,93 @@
+// app/ai-call-center/page.tsx
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { usePrimaryContext } from "@/hooks/usePrimaryContext";
+import { CallLogTable } from "@/components/CallLogTable";
+import { LiveCallBanner } from "@/components/LiveCallBanner";
+import { Nav } from "@/components/Nav";
+import { TodaysScheduleCard } from "@/components/TodaysScheduleCard";
+import { StatCards } from "@/components/StatCards";
+import { ResponseBreakdown } from "@/components/ResponseBreakdown";
+import { HealthSnapshotCard } from "@/components/HealthSnapshotCard";
+import { CallHistoryList } from "@/components/CallHistoryList";
+import { useCalls } from "@/hooks/useCalls";
+import { useDoses } from "@/hooks/useDoses";
+import { useDashboard } from "@/hooks/useDashboard";
 
-import { CallLogTable } from "@/components/call-center/CallLogTable";
-import { LiveCallBanner } from "@/components/call-center/LiveCallBanner";
-import { ResponseBreakdown } from "@/components/call-center/ResponseBreakdown";
-import { StatCards } from "@/components/call-center/StatCards";
-import { TodaysScheduleCard } from "@/components/call-center/TodaysScheduleCard";
-import { Nav } from "@/components/shared/Nav";
-import { getDashboardStats, listCalls, listLiveCalls, listTodaysDoses } from "@/lib/api";
-import { FALLBACK_PATIENT, FALLBACK_CAREGIVER, PATIENT_ID } from "@/lib/constants";
-import type { CallSummary, DashboardStats, DoseWithCall } from "@/lib/types";
-
-export default function AiCallCenterPage() {
-  const [liveCalls, setLiveCalls] = useState<CallSummary[]>([]);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [callLog, setCallLog] = useState<CallSummary[]>([]);
-  const [doses, setDoses] = useState<DoseWithCall[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // ✅ Use hardcoded data
-  const patient = FALLBACK_PATIENT;
-  const caregiver = FALLBACK_CAREGIVER;
-
-  const refresh = useCallback(async () => {
-    try {
-      const [live, s, log, d] = await Promise.all([
-        listLiveCalls(PATIENT_ID),
-        getDashboardStats(PATIENT_ID),
-        listCalls({ patientId: PATIENT_ID, direction: "system", limit: 20 }),
-        listTodaysDoses(PATIENT_ID),
-      ]);
-      
-      setLiveCalls(live || []);
-      setStats(s);
-      setCallLog(log || []);
-      setDoses(d || []);
-    } catch (err) {
-      console.error("Error refreshing data:", err);
-    }
-  }, []);
-
-  useEffect(() => {
-    setLoading(false);
-    refresh();
-    const timer = setInterval(refresh, 4000);
-    return () => clearInterval(timer);
-  }, [refresh]);
+export default function AICallCenterPage() {
+  const { caregiver, patient, loading, error } = usePrimaryContext();
+  const { calls, liveCalls, refreshCalls } = useCalls(patient?.patient_id);
+  const { doses, refreshDoses } = useDoses(patient?.patient_id);
+  const { stats, snapshot, refreshDashboard } = useDashboard(patient?.patient_id);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-sm text-muted">Loading…</div>;
+    return (
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="text-muted">Loading...</div>
+      </div>
+    );
   }
 
+  if (error || !patient) {
+    return (
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="text-clay">Error: {error || "Patient not found"}</div>
+      </div>
+    );
+  }
+
+  const handleCallPlaced = () => {
+    refreshCalls();
+    refreshDoses();
+    refreshDashboard();
+  };
+
   return (
-    <div className="min-h-screen">
-      <Nav caregiverName={caregiver.name} />
-      <main className="mx-auto max-w-5xl px-4 sm:px-8 py-8 flex flex-col gap-6">
-        <header>
-          <p className="text-2xs font-mono uppercase tracking-wide text-accent">AI Call Center</p>
-          <h1 className="text-xl font-semibold text-ink tracking-tight">
-            Automated medication monitoring — {patient.name}
-          </h1>
-          <p className="text-sm text-muted mt-0.5">Scheduled system-to-patient calls, updated in real time.</p>
-        </header>
+    <div className="min-h-screen bg-paper">
+      <Nav caregiverName={caregiver?.name} />
 
-        {liveCalls.map((call) => (
-          <LiveCallBanner key={call.call_id} call={call} onEnded={refresh} />
-        ))}
-
-        {stats && <StatCards stats={stats} />}
-
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-          <CallLogTable calls={callLog} />
-          <div className="flex flex-col gap-6">
-            <TodaysScheduleCard doses={doses} onCallPlaced={refresh} />
-            {stats && <ResponseBreakdown breakdown={stats.breakdown} periodDays={stats.period_days} />}
+      <main className="mx-auto max-w-5xl px-4 sm:px-8 py-8 space-y-6">
+        {/* Patient header */}
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-accent-soft text-accent flex items-center justify-center font-semibold text-lg">
+            {patient.name.charAt(0)}
+          </div>
+          <div>
+            <h1 className="text-xl font-semibold text-ink">AI Call Center</h1>
+            <p className="text-sm text-muted">
+              {patient.name} · {patient.age} years old
+            </p>
           </div>
         </div>
+
+        {/* Live call banner */}
+        {liveCalls.length > 0 && (
+          <LiveCallBanner call={liveCalls[0]} onEnded={handleCallPlaced} />
+        )}
+
+        {/* Stats */}
+        {stats && <StatCards stats={stats} />}
+
+        {/* Today's schedule */}
+        <TodaysScheduleCard doses={doses} onCallPlaced={handleCallPlaced} />
+
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {snapshot && <HealthSnapshotCard snapshot={snapshot} />}
+          {stats?.breakdown && (
+            <ResponseBreakdown breakdown={stats.breakdown} periodDays={stats.period_days} />
+          )}
+        </div>
+
+        {/* Call history */}
+        <CallHistoryList
+          title="Recent calls"
+          calls={calls.slice(0, 10)}
+          emptyText="No calls yet."
+        />
+
+        {/* Full call log */}
+        <CallLogTable calls={calls} />
       </main>
     </div>
   );

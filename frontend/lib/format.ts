@@ -1,4 +1,5 @@
-import type { CallReason, CallStatus, DoseStatus } from "./types";
+// lib/format.ts
+import type { CallReason, CallStatus, DoseStatus, EscalationLevel } from "./types";
 
 export function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
@@ -32,8 +33,21 @@ export function callReasonLabel(reason: CallReason | null): string {
     appointment_reminder: "Appointment reminder",
     general_check: "General check-in",
     urgent_concern: "Urgent concern",
+    emergency_escalation: "🚨 Emergency escalation",
+    medication_out: "💊 Out of medicines",
+    symptom_report: "⚠️ Symptom report",
   };
   return reason ? map[reason] ?? reason : "No reason given";
+}
+
+export function escalationLevelLabel(level: EscalationLevel | null): string {
+  const map: Record<string, string> = {
+    l1_app_only: "📱 App notification",
+    l2_app_browser: "📱🌐 App + Browser",
+    l3_call_patient: "📞 Call patient",
+    l4_call_caregiver: "🚨 Call caregiver",
+  };
+  return level ? map[level] ?? level : "—";
 }
 
 const DOSE_STATUS_STYLES: Record<string, { label: string; dot: string; text: string }> = {
@@ -41,7 +55,7 @@ const DOSE_STATUS_STYLES: Record<string, { label: string; dot: string; text: str
   confirmed: { label: "Taken", dot: "bg-accent", text: "text-accent" },
   missed: { label: "Missed", dot: "bg-clay", text: "text-clay" },
   skipped: { label: "Skipped", dot: "bg-muted", text: "text-muted" },
-  escalated: { label: "No answer — escalated", dot: "bg-clay", text: "text-clay" },
+  escalated: { label: "Escalated", dot: "bg-clay", text: "text-clay" },
 };
 
 export function doseStatusStyle(status: DoseStatus) {
@@ -53,7 +67,6 @@ const CALL_STATUS_STYLES: Record<string, { label: string; dot: string; text: str
   initiated: { label: "Dialing", dot: "bg-amber", text: "text-amber", pulsing: true },
   ringing: { label: "Ringing", dot: "bg-amber", text: "text-amber", pulsing: true },
   answered: { label: "Live", dot: "bg-amber", text: "text-amber", pulsing: true },
-  bridged: { label: "Live", dot: "bg-amber", text: "text-amber", pulsing: true },
   completed: { label: "Done", dot: "bg-accent", text: "text-accent" },
   failed: { label: "Failed", dot: "bg-clay", text: "text-clay" },
   busy: { label: "Busy", dot: "bg-clay", text: "text-clay" },
